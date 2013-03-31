@@ -1,7 +1,7 @@
 function(){
   var jQuery = require('jquery');
   /* ==========================================================
-   * bootstrap-carousel.js v2.0.2
+   * bootstrap-carousel.js v2.0.3
    * http://twitter.github.com/bootstrap/javascript.html#carousel
    * ==========================================================
    * Copyright 2012 Twitter, Inc.
@@ -20,16 +20,17 @@ function(){
    * ========================================================== */
   
   
-  !function( $ ){
+  !function ($) {
   
-    "use strict"
+    "use strict"; // jshint ;_;
+  
   
    /* CAROUSEL CLASS DEFINITION
     * ========================= */
   
     var Carousel = function (element, options) {
       this.$element = $(element)
-      this.options = $.extend({}, $.fn.carousel.defaults, options)
+      this.options = options
       this.options.slide && this.slide(this.options.slide)
       this.options.pause == 'hover' && this.$element
         .on('mouseenter', $.proxy(this.pause, this))
@@ -38,8 +39,11 @@ function(){
   
     Carousel.prototype = {
   
-      cycle: function () {
-        this.interval = setInterval($.proxy(this.next, this), this.options.interval)
+      cycle: function (e) {
+        if (!e) this.paused = false
+        this.options.interval
+          && !this.paused
+          && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
         return this
       }
   
@@ -64,7 +68,8 @@ function(){
         return this.slide(pos > activePos ? 'next' : 'prev', $(children[pos]))
       }
   
-    , pause: function () {
+    , pause: function (e) {
+        if (!e) this.paused = true
         clearInterval(this.interval)
         this.interval = null
         return this
@@ -87,6 +92,7 @@ function(){
           , direction = type == 'next' ? 'left' : 'right'
           , fallback  = type == 'next' ? 'first' : 'last'
           , that = this
+          , e = $.Event('slide')
   
         this.sliding = true
   
@@ -96,24 +102,26 @@ function(){
   
         if ($next.hasClass('active')) return
   
-        if (!$.support.transition && this.$element.hasClass('slide')) {
-          this.$element.trigger('slide')
-          $active.removeClass('active')
-          $next.addClass('active')
-          this.sliding = false
-          this.$element.trigger('slid')
-        } else {
+        if ($.support.transition && this.$element.hasClass('slide')) {
+          this.$element.trigger(e)
+          if (e.isDefaultPrevented()) return
           $next.addClass(type)
           $next[0].offsetWidth // force reflow
           $active.addClass(direction)
           $next.addClass(direction)
-          this.$element.trigger('slide')
           this.$element.one($.support.transition.end, function () {
             $next.removeClass([type, direction].join(' ')).addClass('active')
             $active.removeClass(['active', direction].join(' '))
             that.sliding = false
             setTimeout(function () { that.$element.trigger('slid') }, 0)
           })
+        } else {
+          this.$element.trigger(e)
+          if (e.isDefaultPrevented()) return
+          $active.removeClass('active')
+          $next.addClass('active')
+          this.sliding = false
+          this.$element.trigger('slid')
         }
   
         isCycling && this.cycle()
@@ -127,15 +135,15 @@ function(){
    /* CAROUSEL PLUGIN DEFINITION
     * ========================== */
   
-    $.fn.carousel = function ( option ) {
+    $.fn.carousel = function (option) {
       return this.each(function () {
         var $this = $(this)
           , data = $this.data('carousel')
-          , options = typeof option == 'object' && option
+          , options = $.extend({}, $.fn.carousel.defaults, typeof option == 'object' && option)
         if (!data) $this.data('carousel', (data = new Carousel(this, options)))
         if (typeof option == 'number') data.to(option)
         else if (typeof option == 'string' || (option = options.slide)) data[option]()
-        else data.cycle()
+        else if (options.interval) data.cycle()
       })
     }
   
@@ -160,5 +168,5 @@ function(){
       })
     })
   
-  }( jQuery );
+  }(jQuery);
 }
