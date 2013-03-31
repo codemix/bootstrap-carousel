@@ -1,7 +1,7 @@
 function(){
   var jQuery = require('jquery');
   /* ==========================================================
-   * bootstrap-carousel.js v2.3.0
+   * bootstrap-carousel.js v2.3.1
    * http://twitter.github.com/bootstrap/javascript.html#carousel
    * ==========================================================
    * Copyright 2012 Twitter, Inc.
@@ -77,7 +77,7 @@ function(){
         if (!e) this.paused = true
         if (this.$element.find('.next, .prev').length && $.support.transition.end) {
           this.$element.trigger($.support.transition.end)
-          this.cycle()
+          this.cycle(true)
         }
         clearInterval(this.interval)
         this.interval = null
