@@ -1,4 +1,4 @@
-function(){
+(function(){
   var jQuery = require('jquery');
   /* ==========================================================
    * bootstrap-carousel.js v2.3.1
@@ -207,4 +207,4 @@ function(){
     })
   
   }(jQuery);
-}()
+})()
