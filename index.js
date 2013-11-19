@@ -1,10 +1,9 @@
 (function(){
-  var jQuery = require('jquery');
   /* ========================================================================
-   * Bootstrap: carousel.js v3.0.0
-   * http://twbs.github.com/bootstrap/javascript.html#carousel
+   * Bootstrap: carousel.js v3.0.2
+   * http://getbootstrap.com/javascript/#carousel
    * ========================================================================
-   * Copyright 2012 Twitter, Inc.
+   * Copyright 2013 Twitter, Inc.
    *
    * Licensed under the Apache License, Version 2.0 (the "License");
    * you may not use this file except in compliance with the License.
@@ -71,7 +70,7 @@
   
       if (pos > (this.$items.length - 1) || pos < 0) return
   
-      if (this.sliding)       return this.$element.one('slid', function () { that.to(pos) })
+      if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) })
       if (activeIndex == pos) return this.pause().cycle()
   
       return this.slide(pos > activeIndex ? 'next' : 'prev', $(this.$items[pos]))
@@ -123,7 +122,7 @@
   
       if (this.$indicators.length) {
         this.$indicators.find('.active').removeClass('active')
-        this.$element.one('slid', function () {
+        this.$element.one('slid.bs.carousel', function () {
           var $nextIndicator = $(that.$indicators.children()[that.getActiveIndex()])
           $nextIndicator && $nextIndicator.addClass('active')
         })
@@ -141,7 +140,7 @@
             $next.removeClass([type, direction].join(' ')).addClass('active')
             $active.removeClass(['active', direction].join(' '))
             that.sliding = false
-            setTimeout(function () { that.$element.trigger('slid') }, 0)
+            setTimeout(function () { that.$element.trigger('slid.bs.carousel') }, 0)
           })
           .emulateTransitionEnd(600)
       } else {
@@ -150,7 +149,7 @@
         $active.removeClass('active')
         $next.addClass('active')
         this.sliding = false
-        this.$element.trigger('slid')
+        this.$element.trigger('slid.bs.carousel')
       }
   
       isCycling && this.cycle()
